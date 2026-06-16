@@ -312,7 +312,7 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node blue"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 27</div><div class="tl-title">✈ Europe</div><div class="tl-sub">Che tour begins Jul 1 · Ibiza leg included</div></div>
+        <div class="tl-body"><div class="tl-date">JUN 27</div><div class="tl-title">✈ Europe</div><div class="tl-sub">Che tour Jul 1–11 · solo trip follows through Aug 14+</div></div>
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node blue"></div></div></div>
@@ -388,19 +388,24 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
       <div class="task" onclick="toggleTask('che-eu-size')"><div class="chk" id="chk-che-eu-size"></div><div class="task-txt" id="txt-che-eu-size">Apply EU size splits to 150-unit tee order (S17/M40/L27.5/XL10.5/XXL5)</div></div>
     </div>
     <div class="div"></div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.08em;margin-bottom:8px">DATES</div>
-    <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text2)">
-      <div style="display:flex;justify-content:space-between"><span>Jul 1</span><span style="color:var(--text2)">Paris, FR · Le Trabendo</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 2</span><span style="color:var(--text3)">Travel</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 3</span><span style="color:var(--text2)">Amsterdam, NL · day off</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 4</span><span style="color:var(--text3)">Travel</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 5</span><span style="color:var(--text2)">Amsterdam, NL · Melkweg</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 6</span><span style="color:var(--text3)">Travel</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 7</span><span style="color:var(--text2)">Manchester, UK · New Century Hall</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 8</span><span style="color:var(--text2)">London, UK · Electric Brixton</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 9</span><span style="color:var(--text3)">Travel</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 10</span><span style="color:var(--text2)">Frauenfeld, CH · Openair Frauenfeld</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Jul 11</span><span style="color:var(--text2)">Costinești, RO · Beach Please!</span></div>
+    <div class="collapse-trigger" onclick="toggleCollapse('che-dates')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.08em">DATES</div>
+      <div id="che-dates-icon" style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.06em;transition:transform 0.25s">▾ show</div>
+    </div>
+    <div id="che-dates" style="display:none;margin-top:10px;display:none">
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text2)">
+        <div style="display:flex;justify-content:space-between"><span>Jul 1</span><span style="color:var(--text2)">Paris, FR · Le Trabendo</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 2</span><span style="color:var(--text3)">Travel</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 3</span><span style="color:var(--text2)">Amsterdam, NL · day off</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 4</span><span style="color:var(--text3)">Travel</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 5</span><span style="color:var(--text2)">Amsterdam, NL · Melkweg</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 6</span><span style="color:var(--text3)">Travel</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 7</span><span style="color:var(--text2)">Manchester, UK · New Century Hall</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 8</span><span style="color:var(--text2)">London, UK · Electric Brixton</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 9</span><span style="color:var(--text3)">Travel</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 10</span><span style="color:var(--text2)">Frauenfeld, CH · Openair Frauenfeld</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Jul 11</span><span style="color:var(--text2)">Costinești, RO · Beach Please!</span></div>
+      </div>
     </div>
   </div>
 
@@ -411,6 +416,48 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
       <span class="badge badge-green"><span class="badge-dot"></span>Ready</span>
     </div>
     <div class="done-notice">✓ MAST permit secured · Paperwork submitted</div>
+  </div>
+
+  <div class="sec">personal</div>
+
+  <div class="card" style="border-color:var(--purple);border-color:rgba(167,139,250,0.3)">
+    <div class="card-row">
+      <div><div class="card-title">Europe Solo</div><div class="card-sub">Jul 12 – Aug 14+ · post-tour</div></div>
+      <span class="badge" style="background:rgba(167,139,250,0.08);color:var(--purple);border:1px solid rgba(167,139,250,0.2)">Personal</span>
+    </div>
+    <div class="div"></div>
+    <div class="collapse-trigger" onclick="toggleCollapse('vac-dates')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;margin-bottom:0">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.08em">ITINERARY</div>
+      <div id="vac-dates-icon" style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.06em">▾ show</div>
+    </div>
+    <div id="vac-dates" style="display:none;margin-top:10px">
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span style="color:var(--text2);min-width:70px">Jul 12</span>
+          <span style="color:var(--text3);text-align:right">Depart Romania · TBD</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span style="color:var(--text2);min-width:70px">Jul 12 – Aug 7</span>
+          <span style="color:var(--text3);text-align:right">Journey TBD · figuring out routing</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;background:var(--surface2);border-radius:var(--rad-xs);padding:8px 10px;margin:2px 0">
+          <span style="color:var(--text);font-weight:600;min-width:70px">Aug 7</span>
+          <span style="color:var(--purple);text-align:right;font-weight:500">Ye · Portugal 🎤</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span style="color:var(--text2);min-width:70px">Aug 7 – 14</span>
+          <span style="color:var(--text3);text-align:right">TBD · travel to Ibiza</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;background:var(--surface2);border-radius:var(--rad-xs);padding:8px 10px;margin:2px 0">
+          <span style="color:var(--text);font-weight:600;min-width:70px">Aug 14</span>
+          <span style="color:var(--purple);text-align:right;font-weight:500">Dom Dolla · Ibiza 🎧</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span style="color:var(--text2);min-width:70px">Aug 14+</span>
+          <span style="color:var(--text3);text-align:right">Return TBD</span>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -727,6 +774,15 @@ renderAll();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+function toggleCollapse(id){
+  const el = document.getElementById(id);
+  const icon = document.getElementById(id+'-icon');
+  if(!el) return;
+  const isHidden = el.style.display === 'none' || el.style.display === '';
+  el.style.display = isHidden ? 'block' : 'none';
+  if(icon) icon.textContent = isHidden ? '▴ hide' : '▾ show';
 }
 </script>
 </body>
