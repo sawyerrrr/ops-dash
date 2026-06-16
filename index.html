@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ops Board">
+<meta name="theme-color" content="#0a0a08">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Ops Board</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #e2ddd5;
+    --text: #0a0a08;
+    --muted: #6b6860;
+    --hint: #9e9b94;
+    --green-bg: #eaf3de; --green-text: #3b6d11; --green-border: #97c459;
+    --amber-bg: #faeeda; --amber-text: #854f0b;
+    --blue-bg: #e6f1fb; --blue-text: #185fa5;
+    --red-bg: #fcebeb; --red-text: #a32d2d; --red-border: #f09595;
+    --gray-bg: #f1efe8; --gray-text: #5f5e5a;
+    --lime: #c8f04a; --lime-dark: #7a9a1a;
+    --rad-sm: 10px; --rad: 14px;
+    --mono: 'Courier New', monospace;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { background: #0a0a08; }
+  body {
+    background: var(--bg);
+    font-family: system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    min-height: 100dvh;
+    padding-bottom: calc(70px + var(--safe-bottom));
+  }
+
+/* Header */
+.header {
+background: #0a0a08;
+padding: 16px 18px 14px;
+padding-top: calc(16px + env(safe-area-inset-top, 0px));
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+.header-title {
+font-family: var(–mono);
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+color: var(–lime);
+}
+.header-date {
+font-family: var(–mono);
+font-size: 10px;
+color: #555;
+letter-spacing: 0.06em;
+}
+.reset-btn {
+font-family: var(–mono);
+font-size: 10px;
+color: #444;
+background: none;
+border: 0.5px solid #333;
+border-radius: 6px;
+padding: 4px 8px;
+cursor: pointer;
+letter-spacing: 0.06em;
+}
+
+/* Bottom nav */
+.bottom-nav {
+position: fixed;
+bottom: 0;
+left: 0; right: 0;
+background: #0a0a08;
+border-top: 0.5px solid #222;
+display: flex;
+padding-bottom: var(–safe-bottom);
+z-index: 100;
+}
+.nav-tab {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 3px;
+padding: 10px 0 8px;
+cursor: pointer;
+border: none;
+background: none;
+color: #444;
+font-size: 10px;
+font-family: var(–mono);
+letter-spacing: 0.05em;
+text-transform: uppercase;
+transition: color 0.15s;
+}
+.nav-tab.active { color: var(–lime); }
+.nav-icon { font-size: 18px; line-height: 1; }
+
+/* Pages */
+.page { display: none; padding: 16px; }
+.page.active { display: block; }
+
+/* Cards */
+.card {
+background: var(–surface);
+border: 0.5px solid var(–border);
+border-radius: var(–rad);
+padding: 14px 16px;
+margin-bottom: 12px;
+}
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.card-title { font-size: 16px; font-weight: 600; line-height: 1.2; }
+.card-sub { font-size: 12px; color: var(–muted); margin-top: 3px; }
+.section-label {
+font-family: var(–mono);
+font-size: 10px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–hint);
+margin: 18px 0 8px;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* Pills */
+.pill {
+display: inline-flex; align-items: center; gap: 4px;
+font-size: 10px; font-weight: 600;
+padding: 3px 8px; border-radius: 20px; white-space: nowrap;
+}
+.pill-live { background: var(–green-bg); color: var(–green-text); }
+.pill-soon { background: var(–amber-bg); color: var(–amber-text); }
+.pill-active { background: var(–blue-bg); color: var(–blue-text); }
+.pill-wait { background: var(–gray-bg); color: var(–gray-text); }
+.pill-done { background: var(–green-bg); color: var(–green-text); }
+.pill-urgent { background: var(–red-bg); color: var(–red-text); }
+.pill-lime { background: #edfabd; color: var(–lime-dark); }
+.dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+.dot-green { background: #639922; }
+.dot-amber { background: #ef9f27; }
+
+/* Tap-to-check tasks */
+.task-list { display: flex; flex-direction: column; gap: 0; margin-top: 10px; }
+.task-item {
+display: flex; align-items: flex-start; gap: 12px;
+padding: 10px 0;
+border-bottom: 0.5px solid var(–border);
+cursor: pointer;
+user-select: none;
+-webkit-user-select: none;
+transition: opacity 0.15s;
+touch-action: manipulation;
+}
+.task-item:last-child { border-bottom: none; padding-bottom: 0; }
+.task-item:first-child { padding-top: 0; }
+.task-check {
+width: 20px; height: 20px; border-radius: 50%;
+border: 1.5px solid var(–border);
+flex-shrink: 0;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.15s;
+margin-top: 1px;
+}
+.task-check.done { background: #639922; border-color: #639922; }
+.task-check.done::after { content: ‘✓’; color: white; font-size: 11px; font-weight: 700; }
+.task-text { font-size: 13.5px; line-height: 1.45; flex: 1; transition: color 0.15s; }
+.task-text.done { color: var(–hint); text-decoration: line-through; }
+
+/* Timeline */
+.tl { display: flex; flex-direction: column; }
+.tl-row { display: flex; gap: 0; }
+.tl-col { display: flex; flex-direction: column; align-items: center; width: 24px; flex-shrink: 0; }
+.tl-dot-wrap { height: 26px; display: flex; align-items: center; justify-content: center; }
+.tl-node { width: 8px; height: 8px; border-radius: 50%; background: var(–border); }
+.tl-node.green { background: #639922; }
+.tl-node.amber { background: #ef9f27; }
+.tl-node.blue { background: #378add; }
+.tl-node.red { background: #e24b4a; }
+.tl-node.purple { background: #a855f7; }
+.tl-node.gray { background: var(–hint); }
+.tl-line { width: 1.5px; background: var(–border); flex: 1; min-height: 4px; }
+.tl-content { padding: 3px 0 10px 10px; flex: 1; }
+.tl-date { font-family: var(–mono); font-size: 9px; color: var(–hint); letter-spacing: 0.06em; }
+.tl-title { font-size: 13px; font-weight: 600; margin-top: 1px; }
+.tl-title.done { color: var(–hint); text-decoration: line-through; }
+.tl-sub { font-size: 11.5px; color: var(–muted); margin-top: 1px; }
+.tl-row:last-child .tl-line { display: none; }
+
+/* CS store grid */
+.store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.store-card {
+background: var(–surface2);
+border-radius: var(–rad-sm);
+padding: 10px 12px;
+cursor: pointer;
+transition: all 0.15s;
+touch-action: manipulation;
+border: 1.5px solid transparent;
+}
+.store-card.cleared { border-color: var(–green-border); background: var(–green-bg); }
+.store-name { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.store-tasks { display: flex; flex-direction: column; gap: 4px; }
+.store-task { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(–muted); }
+.store-task.done { color: var(–green-text); }
+.mini-check { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(–border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.mini-check.done { background: #639922; border-color: #639922; }
+.mini-check.done::after { content: ‘✓’; color: white; font-size: 8px; font-weight: 700; }
+.store-clear-badge { display: none; font-size: 10px; font-weight: 600; color: var(–green-text); font-family: var(–mono); margin-top: 4px; }
+.store-card.cleared .store-clear-badge { display: block; }
+
+/* EU opt-out grid */
+.eu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.eu-card {
+background: var(–surface2);
+border-radius: var(–rad-sm);
+padding: 10px 12px;
+cursor: pointer;
+border: 1.5px solid transparent;
+touch-action: manipulation;
+transition: all 0.15s;
+}
+.eu-card.done { background: var(–green-bg); border-color: var(–green-border); }
+.eu-store-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.eu-badge { font-size: 10px; font-weight: 500; font-family: var(–mono); color: var(–amber-text); }
+.eu-card.done .eu-badge { color: var(–green-text); }
+
+/* Deadline chip */
+.deadline { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; background: var(–red-bg); color: var(–red-text); }
+
+/* Done row */
+.done-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 10px; padding: 8px 10px; background: var(–green-bg); border-radius: var(–rad-sm); color: var(–green-text); font-weight: 500; }
+
+/* GP steps */
+.gp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.gp-step { background: var(–surface2); border-radius: var(–rad-sm); padding: 10px 12px; }
+.gp-label { font-family: var(–mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; color: var(–hint); margin-bottom: 6px; }
+.gp-tasks { display: flex; flex-direction: column; gap: 5px; }
+.gp-task { display: flex; gap: 6px; font-size: 11px; color: var(–muted); line-height: 1.4; }
+.gp-dot-s { width: 4px; height: 4px; border-radius: 50%; background: var(–lime-dark); flex-shrink: 0; margin-top: 5px; opacity: 0.6; }
+
+/* Chargeback items */
+.cb-item {
+display: flex; align-items: center; justify-content: space-between;
+padding: 10px 0; border-bottom: 0.5px solid var(–border);
+}
+.cb-item:last-child { border-bottom: none; }
+.cb-store { font-size: 13px; font-weight: 600; }
+.cb-due { font-size: 11px; color: var(–red-text); font-family: var(–mono); font-weight: 600; }
+.cb-check {
+width: 22px; height: 22px; border-radius: 50%;
+border: 1.5px solid var(–border);
+display: flex; align-items: center; justify-content: center;
+cursor: pointer; flex-shrink: 0;
+touch-action: manipulation;
+transition: all 0.15s;
+}
+.cb-check.done { background: #639922; border-color: #639922; }
+.cb-check.done::after { content: ‘✓’; color: white; font-size: 11px; font-weight: 700; }
+
+.fade-in { animation: fadeUp 0.25s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">Ops Board</div>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+  <button class="reset-btn" onclick="resetDay()">Reset Day</button>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+  <button class="nav-tab active" onclick="showPage('today')" id="tab-today">
+    <span class="nav-icon">☀️</span>Today
+  </button>
+  <button class="nav-tab" onclick="showPage('tour')" id="tab-tour">
+    <span class="nav-icon">🎤</span>Tour
+  </button>
+  <button class="nav-tab" onclick="showPage('freelance')" id="tab-freelance">
+    <span class="nav-icon">💻</span>Freelance
+  </button>
+  <button class="nav-tab" onclick="showPage('goo')" id="tab-goo">
+    <span class="nav-icon">📦</span>GOO
+  </button>
+</nav>
+
+<!-- TODAY PAGE -->
+
+<div class="page active" id="page-today">
+
+  <div class="section-label">Timeline</div>
+  <div class="card">
+    <div class="tl">
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node green"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 15–16</div><div class="tl-title">Off days</div><div class="tl-sub">Call Will · Greek site · Chase revisions</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node amber"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 17–18</div><div class="tl-title">Back on tour</div><div class="tl-sub">Portland — final Bleood show</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node red"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 19</div><div class="tl-title">Tiësto @ Fisher Pavilion</div><div class="tl-sub">Bar back · Arrive 3 PM with Ronan · MAST ✓</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node purple"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 20</div><div class="tl-title">Party day</div><div class="tl-sub">Post-Tiësto</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node amber"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 21–25</div><div class="tl-title">Freelance sprint</div><div class="tl-sub">Greek site · Yuzu Punks · EU opt-outs · Omolon GP</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node red"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 26</div><div class="tl-title">Greek website due + EU opt-outs live</div><div class="tl-sub">Deliver to Idkgreek · All 4 GOO stores GDPR compliant · Pack for Europe</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node blue"></div></div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-date">JUN 27</div><div class="tl-title">✈️ Fly out — Europe</div><div class="tl-sub">Che Europe Tour begins Jul 1</div></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col"><div class="tl-dot-wrap"><div class="tl-node blue"></div></div></div>
+        <div class="tl-content"><div class="tl-date">JUL 1–10</div><div class="tl-title">Che Europe Tour</div><div class="tl-sub">Ibiza leg included · Aug–Sep solo trip follows</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Daily CS — tap store to toggle</div>
+  <div class="store-grid" id="csGrid">
+    <div class="store-card" id="cs-praiseche" onclick="toggleStore('praiseche')">
+      <div class="store-name">Praise Che</div>
+      <div class="store-tasks">
+        <div class="store-task" id="cs-praiseche-inbox"><div class="mini-check" id="mc-praiseche-inbox"></div>CS inbox</div>
+        <div class="store-task" id="cs-praiseche-cb"><div class="mini-check" id="mc-praiseche-cb"></div>Chargebacks</div>
+      </div>
+      <div class="store-clear-badge">✓ cleared</div>
+    </div>
+    <div class="store-card" id="cs-bleood" onclick="toggleStore('bleood')">
+      <div class="store-name">Bleood</div>
+      <div class="store-tasks">
+        <div class="store-task" id="cs-bleood-inbox"><div class="mini-check" id="mc-bleood-inbox"></div>CS inbox</div>
+        <div class="store-task" id="cs-bleood-cb"><div class="mini-check" id="mc-bleood-cb"></div>Chargebacks</div>
+      </div>
+      <div class="store-clear-badge">✓ cleared</div>
+    </div>
+    <div class="store-card" id="cs-joeyy" onclick="toggleStore('joeyy')">
+      <div class="store-name">Joeyy Official</div>
+      <div class="store-tasks">
+        <div class="store-task" id="cs-joeyy-inbox"><div class="mini-check" id="mc-joeyy-inbox"></div>CS inbox</div>
+        <div class="store-task" id="cs-joeyy-cb"><div class="mini-check" id="mc-joeyy-cb"></div>Chargebacks</div>
+      </div>
+      <div class="store-clear-badge">✓ cleared</div>
+    </div>
+    <div class="store-card" id="cs-rr" onclick="toggleStore('rr')">
+      <div class="store-name">ReallyRich</div>
+      <div class="store-tasks">
+        <div class="store-task" id="cs-rr-inbox"><div class="mini-check" id="mc-rr-inbox"></div>CS inbox</div>
+        <div class="store-task" id="cs-rr-cb"><div class="mini-check" id="mc-rr-cb"></div>Chargebacks</div>
+      </div>
+      <div class="store-clear-badge">✓ cleared</div>
+    </div>
+  </div>
+
+  <div class="section-label">Open chargebacks</div>
+  <div class="card">
+    <div class="cb-item">
+      <div><div class="cb-store">Praise Che</div><div class="cb-due">Due Jul 7</div></div>
+      <div class="cb-check" id="cb-che" onclick="toggleCb('che')"></div>
+    </div>
+    <div class="cb-item">
+      <div><div class="cb-store">Bleood</div><div class="cb-due">Due Jul 22</div></div>
+      <div class="cb-check" id="cb-bleood" onclick="toggleCb('bleood')"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOUR PAGE -->
+
+<div class="page" id="page-tour">
+
+  <div class="section-label">Active</div>
+  <div class="card" style="border-left: 3px solid #639922;">
+    <div class="card-head">
+      <div><div class="card-title">Bleood Tour 2026</div><div class="card-sub">17-date run · May–June 2026 · Final: Portland Jun 17–18</div></div>
+      <span class="pill pill-live"><span class="dot dot-green"></span>On tour</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('bleood-perdiem')">
+        <div class="task-check" id="check-bleood-perdiem"></div>
+        <div class="task-text" id="text-bleood-perdiem">Track per diem & expenses ($40/day)</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('bleood-merch')">
+        <div class="task-check" id="check-bleood-merch"></div>
+        <div class="task-text" id="text-bleood-merch">On-site merch operations</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Upcoming</div>
+  <div class="card" style="border-left: 3px solid #ef9f27;">
+    <div class="card-head">
+      <div><div class="card-title">Che Europe Tour</div><div class="card-sub">Jul 1–10 · Ibiza leg included · Fly out Jun 27</div></div>
+      <span class="pill pill-soon"><span class="dot dot-amber"></span>Jul 1–10</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('che-prep')">
+        <div class="task-check" id="check-che-prep"></div>
+        <div class="task-text" id="text-che-prep">Tour prep & logistics</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('che-merch')">
+        <div class="task-check" id="check-che-merch"></div>
+        <div class="task-text" id="text-che-merch">Merch coordination — align with Dawson</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Side gig · Jun 19</div>
+  <div class="card" style="border-left: 3px solid #639922; opacity: 0.75;">
+    <div class="card-head">
+      <div><div class="card-title">Tiësto @ Fisher Pavilion</div><div class="card-sub">305 Harrison St · Arrive 3 PM with Ronan · Doors 5 PM</div></div>
+      <span class="pill pill-done"><span class="dot dot-green"></span>Ready</span>
+    </div>
+    <div class="done-row">✅ MAST permit secured · Paperwork submitted</div>
+  </div>
+
+</div>
+
+<!-- FREELANCE PAGE -->
+
+<div class="page" id="page-freelance">
+
+  <div class="section-label">Priority</div>
+  <div class="card" style="border-top: 2px solid #378add;">
+    <div class="card-head">
+      <div><div class="card-title">Yuzu Punks</div><div class="card-sub">Shopify storefront build</div></div>
+      <span class="pill pill-active">Main</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('yuzu-invoice')">
+        <div class="task-check" id="check-yuzu-invoice"></div>
+        <div class="task-text" id="text-yuzu-invoice">Get invoice paid</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('yuzu-will')">
+        <div class="task-check" id="check-yuzu-will"></div>
+        <div class="task-text" id="text-yuzu-will">Call Will tonight — Shopify setup</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('yuzu-dev')">
+        <div class="task-check" id="check-yuzu-dev"></div>
+        <div class="task-text" id="text-yuzu-dev">Develop storefront from Figma boards</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 2px solid #e24b4a;">
+    <div class="card-head">
+      <div><div class="card-title">Idkgreek</div><div class="card-sub">Website build</div></div>
+      <span class="deadline">Due Jun 26</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('greek-build')">
+        <div class="task-check" id="check-greek-build"></div>
+        <div class="task-text" id="text-greek-build">Build & deliver Greek website by Jun 26</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Active</div>
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Chase Rutherford</div><div class="card-sub">Clothing brand · nearly done</div></div>
+      <span class="pill pill-wait">In progress</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('chase-revisions')">
+        <div class="task-check" id="check-chase-revisions"></div>
+        <div class="task-text" id="text-chase-revisions">Apply desktop & mobile revision notes</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('chase-scope')">
+        <div class="task-check" id="check-chase-scope"></div>
+        <div class="task-text" id="text-chase-scope">Clarify remaining scope with client</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">SixStar</div><div class="card-sub">Code revamp + scope discovery</div></div>
+      <span class="pill pill-wait">Active</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('six-sync')">
+        <div class="task-check" id="check-six-sync"></div>
+        <div class="task-text" id="text-six-sync">Sync with Liebs & GK on next steps</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('six-code')">
+        <div class="task-check" id="check-six-code"></div>
+        <div class="task-text" id="text-six-code">Revamp codebase with Sonnet 4.6/Opus</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('six-scope')">
+        <div class="task-check" id="check-six-scope"></div>
+        <div class="task-text" id="text-six-scope">Identify work needed outside site</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="opacity: 0.7;">
+    <div class="card-head">
+      <div><div class="card-title">Hann Homes</div><div class="card-sub">hannhomesllc.com</div></div>
+      <span class="pill pill-wait">⏳ Waiting</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text">Awaiting response from Mark Hann</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Omolon — Business Formation</div>
+  <div class="card" style="border-left: 3px solid #7a9a1a;">
+    <div class="card-head">
+      <div><div class="card-title">Set Up Omolon as GP</div><div class="card-sub">General Partnership with Sergio</div></div>
+      <span class="pill pill-lime">Not started</span>
+    </div>
+    <div class="gp-grid">
+      <div class="gp-step">
+        <div class="gp-label">Entity & Legal</div>
+        <div class="gp-tasks">
+          <div class="gp-task"><span class="gp-dot-s"></span>File GP with WA SOS</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Draft partnership agreement</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Confirm ownership split</div>
+        </div>
+      </div>
+      <div class="gp-step">
+        <div class="gp-label">Tax & Banking</div>
+        <div class="gp-tasks">
+          <div class="gp-task"><span class="gp-dot-s"></span>Apply for EIN (IRS)</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Open business bank account</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Set up bookkeeping</div>
+        </div>
+      </div>
+      <div class="gp-step">
+        <div class="gp-label">Brand & Contracts</div>
+        <div class="gp-tasks">
+          <div class="gp-task"><span class="gp-dot-s"></span>Update omolon.net</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Update invoice templates</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Re-execute client contracts</div>
+        </div>
+      </div>
+      <div class="gp-step">
+        <div class="gp-label">Operations</div>
+        <div class="gp-tasks">
+          <div class="gp-task"><span class="gp-dot-s"></span>Register UBI with WA DOR</div>
+          <div class="gp-task"><span class="gp-dot-s"></span>Separate expenses from personal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- GOO PAGE -->
+
+<div class="page" id="page-goo">
+
+  <div class="section-label">Open chargebacks</div>
+  <div class="card">
+    <div class="cb-item">
+      <div><div class="cb-store">Praise Che</div><div class="cb-due">Respond by Jul 7</div></div>
+      <div class="cb-check" id="cb2-che" onclick="toggleCb('che')"></div>
+    </div>
+    <div class="cb-item">
+      <div><div class="cb-store">Bleood</div><div class="cb-due">Respond by Jul 22</div></div>
+      <div class="cb-check" id="cb2-bleood" onclick="toggleCb('bleood')"></div>
+    </div>
+  </div>
+
+  <div class="section-label">Dev tasks · EU opt-out buttons</div>
+  <div class="card" style="border-left: 3px solid #ef9f27;">
+    <div class="card-head">
+      <div><div class="card-title">GDPR Cookie Opt-Out</div><div class="card-sub">Implement on all 4 GOO storefronts before Europe</div></div>
+      <span class="pill pill-soon">Pending</span>
+    </div>
+    <div class="eu-grid" id="euGrid">
+      <div class="eu-card" id="eu-praiseche" onclick="toggleEu('praiseche')">
+        <div class="eu-store-name">Praise Che</div>
+        <div class="eu-badge" id="eu-badge-praiseche">not done</div>
+      </div>
+      <div class="eu-card" id="eu-bleood" onclick="toggleEu('bleood')">
+        <div class="eu-store-name">Bleood</div>
+        <div class="eu-badge" id="eu-badge-bleood">not done</div>
+      </div>
+      <div class="eu-card" id="eu-joeyy" onclick="toggleEu('joeyy')">
+        <div class="eu-store-name">Joeyy Official</div>
+        <div class="eu-badge" id="eu-badge-joeyy">not done</div>
+      </div>
+      <div class="eu-card" id="eu-rr" onclick="toggleEu('rr')">
+        <div class="eu-store-name">ReallyRich</div>
+        <div class="eu-badge" id="eu-badge-rr">not done</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Backlog</div>
+  <div class="card">
+    <div class="task-list">
+      <div class="task-item" onclick="toggleTask('goo-shopify-api')">
+        <div class="task-check" id="check-goo-shopify-api"></div>
+        <div class="task-text" id="text-goo-shopify-api">Multi-store Shopify API hookup for Claude</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('goo-cs-auto')">
+        <div class="task-check" id="check-goo-cs-auto"></div>
+        <div class="task-text" id="text-goo-cs-auto">Automate CS workflow via Front API</div>
+      </div>
+      <div class="task-item" onclick="toggleTask('goo-seed-lists')">
+        <div class="task-check" id="check-goo-seed-lists"></div>
+        <div class="task-text" id="text-goo-seed-lists">Seed email/marketing lists across stores</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // --- State ---
+  const STATE_KEY = 'ops_state_v1';
+  const DATE_KEY = 'ops_date';
+
+  function getState() {
+    try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; } catch { return {}; }
+  }
+  function setState(s) { localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
+
+  // --- Date check: reset CS at 6am PST each day ---
+  function getDayKey() {
+    // Get current time in PST/PDT (America/Los_Angeles)
+    const now = new Date();
+    const pst = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+    // If before 6am, treat as previous day's session
+    if (pst.getHours() < 6) {
+      pst.setDate(pst.getDate() - 1);
+    }
+    return pst.toDateString();
+  }
+
+  function checkDate() {
+    const todayKey = getDayKey();
+    const last = localStorage.getItem(DATE_KEY);
+    if (last !== todayKey) {
+      const s = getState();
+      ['praiseche','bleood','joeyy','rr'].forEach(id => { s['cs_' + id] = false; });
+      // Also reset daily CB checks
+      ['che','bleood'].forEach(id => { delete s['cb_done_' + id]; });
+      setState(s);
+      localStorage.setItem(DATE_KEY, todayKey);
+    }
+  }
+
+  function resetDay() {
+    if (!confirm('Reset all daily CS checks?')) return;
+    const s = getState();
+    ['praiseche','bleood','joeyy','rr'].forEach(id => { s['cs_' + id] = false; });
+    setState(s);
+    localStorage.setItem(DATE_KEY, getDayKey());
+    renderAll();
+  }
+
+  // --- Header date ---
+  function setHeaderDate() {
+    const d = new Date();
+    const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+    document.getElementById('headerDate').textContent = d.toLocaleDateString('en-US', opts).toUpperCase();
+  }
+
+  // --- Nav ---
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+
+  // --- Generic task toggle ---
+  function toggleTask(id) {
+    const s = getState();
+    s['task_' + id] = !s['task_' + id];
+    setState(s);
+    renderTask(id, s['task_' + id]);
+  }
+
+  function renderTask(id, done) {
+    const check = document.getElementById('check-' + id);
+    const text = document.getElementById('text-' + id);
+    if (!check) return;
+    if (done) { check.classList.add('done'); text.classList.add('done'); }
+    else { check.classList.remove('done'); text.classList.remove('done'); }
+  }
+
+  // --- CS store toggle (tapping marks both sub-tasks done) ---
+  function toggleStore(store) {
+    const s = getState();
+    s['cs_' + store] = !s['cs_' + store];
+    setState(s);
+    renderStore(store, s['cs_' + store]);
+  }
+
+  function renderStore(store, done) {
+    const card = document.getElementById('cs-' + store);
+    const inbox = document.getElementById('cs-' + store + '-inbox');
+    const cb = document.getElementById('cs-' + store + '-cb');
+    const mcInbox = document.getElementById('mc-' + store + '-inbox');
+    const mcCb = document.getElementById('mc-' + store + '-cb');
+    if (!card) return;
+    if (done) {
+      card.classList.add('cleared');
+      inbox.classList.add('done'); cb.classList.add('done');
+      mcInbox.classList.add('done'); mcCb.classList.add('done');
+    } else {
+      card.classList.remove('cleared');
+      inbox.classList.remove('done'); cb.classList.remove('done');
+      mcInbox.classList.remove('done'); mcCb.classList.remove('done');
+    }
+  }
+
+  // --- Chargeback toggle ---
+  function toggleCb(id) {
+    const s = getState();
+    s['cb_' + id] = !s['cb_' + id];
+    setState(s);
+    renderCb(id, s['cb_' + id]);
+  }
+
+  function renderCb(id, done) {
+    ['cb-' + id, 'cb2-' + id].forEach(elId => {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (done) el.classList.add('done'); else el.classList.remove('done');
+    });
+  }
+
+  // --- EU opt-out toggle ---
+  function toggleEu(store) {
+    const s = getState();
+    s['eu_' + store] = !s['eu_' + store];
+    setState(s);
+    renderEu(store, s['eu_' + store]);
+  }
+
+  function renderEu(store, done) {
+    const card = document.getElementById('eu-' + store);
+    const badge = document.getElementById('eu-badge-' + store);
+    if (!card) return;
+    if (done) { card.classList.add('done'); badge.textContent = '✓ done'; }
+    else { card.classList.remove('done'); badge.textContent = 'not done'; }
+  }
+
+  // --- Render all from state ---
+  function renderAll() {
+    const s = getState();
+    // Tasks
+    const tasks = [
+      'bleood-perdiem','bleood-merch','che-prep','che-merch',
+      'yuzu-invoice','yuzu-will','yuzu-dev','greek-build',
+      'chase-revisions','chase-scope','six-sync','six-code','six-scope',
+      'goo-shopify-api','goo-cs-auto','goo-seed-lists'
+    ];
+    tasks.forEach(id => renderTask(id, !!s['task_' + id]));
+    // CS stores
+    ['praiseche','bleood','joeyy','rr'].forEach(store => renderStore(store, !!s['cs_' + store]));
+    // Chargebacks
+    ['che','bleood'].forEach(id => renderCb(id, !!s['cb_' + id]));
+    // EU opt-outs
+    ['praiseche','bleood','joeyy','rr'].forEach(store => renderEu(store, !!s['eu_' + store]));
+  }
+
+  // --- Init ---
+  checkDate();
+  setHeaderDate();
+  renderAll();
+
+  // --- Service Worker ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>
