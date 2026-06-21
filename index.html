@@ -287,28 +287,20 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
   <div class="card">
     <div class="tl">
       <div class="tl-row">
+        <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node dim"></div></div><div class="tl-line"></div></div>
+        <div class="tl-body"><div class="tl-date">JUN 17 – 20</div><div class="tl-title dim">Portland · Tiësto · EU opt-outs</div><div class="tl-sub">Tour closed out · MAST done · GDPR live on all 4 stores ✓</div></div>
+      </div>
+      <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node lime"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 17 – 18</div><div class="tl-title">Portland — last Bleood show</div><div class="tl-sub">Final dates of the run</div></div>
+        <div class="tl-body"><div class="tl-date">JUN 21 – 25</div><div class="tl-title">Work window</div><div class="tl-sub">Omolon GP · Greek site · Yuzu Punks (awaiting invoice)</div></div>
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node red"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 19</div><div class="tl-title">EU opt-out buttons due · Tiësto @ Fisher Pavilion</div><div class="tl-sub">All 4 GOO stores GDPR compliant · Bar back w/ Ronan · 3 PM · MAST ✓</div></div>
-      </div>
-      <div class="tl-row">
-        <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node purple"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 20</div><div class="tl-title">Day off</div><div class="tl-sub">Post-Tiësto</div></div>
-      </div>
-      <div class="tl-row">
-        <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node amber"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 21 – 25</div><div class="tl-title">Work window</div><div class="tl-sub">Omolon GP · Greek site · Yuzu Punks</div></div>
-      </div>
-      <div class="tl-row">
-        <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node red"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 26</div><div class="tl-title">Deadlines</div><div class="tl-sub">Greek website due · Pack for Europe</div></div>
+        <div class="tl-body"><div class="tl-date">JUN 26</div><div class="tl-title">Greek website due</div><div class="tl-sub">Pack for Europe</div></div>
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node blue"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 27</div><div class="tl-title">✈ Europe</div><div class="tl-sub">Che tour Jul 1–11 · solo trip follows through Aug 14+</div></div>
+        <div class="tl-body"><div class="tl-date">JUN 27</div><div class="tl-title">✈ Europe · 10 PM departure</div><div class="tl-sub">Che tour Jul 1–11 · solo trip follows through Aug 14+</div></div>
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node blue"></div></div></div>
@@ -512,7 +504,7 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
       <span class="badge badge-blue">2</span>
     </div>
     <div class="tasks">
-      <div class="task" onclick="toggleTask('yuzu-invoice')"><div class="chk" id="chk-yuzu-invoice"></div><div class="task-txt" id="txt-yuzu-invoice">Get invoice paid</div></div>
+      <div class="task" onclick="toggleTask('yuzu-invoice')"><div class="chk" id="chk-yuzu-invoice"></div><div class="task-txt" id="txt-yuzu-invoice">Awaiting invoice payment — blocks dev start</div></div>
       <div class="task" onclick="toggleTask('yuzu-will')"><div class="chk" id="chk-yuzu-will"></div><div class="task-txt" id="txt-yuzu-will">Call Will — Shopify setup</div></div>
       <div class="task" onclick="toggleTask('yuzu-dev')"><div class="chk" id="chk-yuzu-dev"></div><div class="task-txt" id="txt-yuzu-dev">Develop storefront from Figma boards</div></div>
     </div>
@@ -766,6 +758,20 @@ function setDate(){
 
 checkReset();
 setDate();
+
+// One-time defaults: mark Will call + EU opt-outs done if user hasn't touched them yet
+(function applyDefaults(){
+  const s = getS();
+  if(s['_defaults_v3'] !== true){
+    if(s['t_yuzu-will'] === undefined) s['t_yuzu-will'] = true;
+    ['praiseche','bleood','joeyy','rr'].forEach(store => {
+      if(s['eu_'+store] === undefined) s['eu_'+store] = true;
+    });
+    s['_defaults_v3'] = true;
+    setS(s);
+  }
+})();
+
 renderAll();
 
 if('serviceWorker' in navigator){
