@@ -292,7 +292,7 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node lime"></div></div><div class="tl-line"></div></div>
-        <div class="tl-body"><div class="tl-date">JUN 21 – 25</div><div class="tl-title">Work window</div><div class="tl-sub">Omolon GP · Greek site · Yuzu Punks (awaiting invoice)</div></div>
+        <div class="tl-body"><div class="tl-date">JUN 21 – 25</div><div class="tl-title">Work window</div><div class="tl-sub">Greek site (links + poster due Fri) · Chase review · Yuzu blocked on payment · Omolon GP</div></div>
       </div>
       <div class="tl-row">
         <div class="tl-spine"><div class="tl-node-wrap"><div class="tl-node red"></div></div><div class="tl-line"></div></div>
@@ -500,34 +500,34 @@ body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:1
 
   <div class="card" style="border-color:var(--blue-border)">
     <div class="card-row">
-      <div><div class="card-title">Yuzu Punks</div><div class="card-sub">Shopify storefront build</div></div>
+      <div><div class="card-title">Yuzu Punks</div><div class="card-sub">Blocked — payment still not sent</div></div>
       <span class="badge badge-red">Jul 7</span>
     </div>
     <div class="tasks">
-      <div class="task" onclick="toggleTask('yuzu-invoice')"><div class="chk" id="chk-yuzu-invoice"></div><div class="task-txt" id="txt-yuzu-invoice">Awaiting invoice payment — blocks dev start</div></div>
-      <div class="task" onclick="toggleTask('yuzu-will')"><div class="chk" id="chk-yuzu-will"></div><div class="task-txt" id="txt-yuzu-will">Call Will — Shopify setup</div></div>
+      <div class="task" onclick="toggleTask('yuzu-invoice')"><div class="chk" id="chk-yuzu-invoice"></div><div class="task-txt" id="txt-yuzu-invoice">Still need invoice paid before any dev work</div></div>
       <div class="task" onclick="toggleTask('yuzu-dev')"><div class="chk" id="chk-yuzu-dev"></div><div class="task-txt" id="txt-yuzu-dev">Develop storefront from Figma boards</div></div>
     </div>
   </div>
 
   <div class="card" style="border-color:var(--red-border)">
     <div class="card-row">
-      <div><div class="card-title">Idkgreek</div><div class="card-sub">Website build</div></div>
+      <div><div class="card-title">Idkgreek</div><div class="card-sub">All other links + tour dates added</div></div>
       <span class="badge badge-red">Due Jun 26</span>
     </div>
     <div class="tasks">
-      <div class="task" onclick="toggleTask('greek-build')"><div class="chk" id="chk-greek-build"></div><div class="task-txt" id="txt-greek-build">Build & deliver website by Jun 26</div></div>
+      <div class="task" onclick="toggleTask('greek-na-link')"><div class="chk" id="chk-greek-na-link"></div><div class="task-txt" id="txt-greek-na-link">Add 1 NA link</div></div>
+      <div class="task" onclick="toggleTask('greek-eu-links')"><div class="chk" id="chk-greek-eu-links"></div><div class="task-txt" id="txt-greek-eu-links">Add 2 EU links</div></div>
+      <div class="task" onclick="toggleTask('greek-poster')"><div class="chk" id="chk-greek-poster"></div><div class="task-txt" id="txt-greek-poster">New tour poster — due Friday</div></div>
     </div>
   </div>
 
   <div class="card">
     <div class="card-row">
-      <div><div class="card-title">Chase Rutherford</div><div class="card-sub">Clothing brand · final draft due Jul 7</div></div>
+      <div><div class="card-title">Chase Rutherford</div><div class="card-sub">Draft finished · final due Jul 7</div></div>
       <span class="badge badge-red">Jul 7</span>
     </div>
     <div class="tasks">
-      <div class="task" onclick="toggleTask('chase-revisions')"><div class="chk" id="chk-chase-revisions"></div><div class="task-txt" id="txt-chase-revisions">Apply desktop & mobile revision notes</div></div>
-      <div class="task" onclick="toggleTask('chase-scope')"><div class="chk" id="chk-chase-scope"></div><div class="task-txt" id="txt-chase-scope">Clarify remaining scope</div></div>
+      <div class="task" onclick="toggleTask('chase-review')"><div class="chk" id="chk-chase-review"></div><div class="task-txt" id="txt-chase-review">Manually review notes — confirm everything addressed</div></div>
     </div>
   </div>
 
@@ -736,8 +736,9 @@ function renderAll(){
   const s=getS();
   // tasks
   ['che-prep','che-merch','che-eu-size',
-   'yuzu-invoice','yuzu-will','yuzu-dev',
-   'greek-build','chase-revisions','chase-scope',
+   'yuzu-invoice','yuzu-dev',
+   'greek-na-link','greek-eu-links','greek-poster',
+   'chase-review',
    'six-sync','six-code',
    'goo-api','goo-cs-auto','goo-seed','goo-gh'
   ].forEach(id=>renderTask(id,!!s['t_'+id]));
@@ -762,12 +763,11 @@ setDate();
 // One-time defaults: mark Will call + EU opt-outs done if user hasn't touched them yet
 (function applyDefaults(){
   const s = getS();
-  if(s['_defaults_v3'] !== true){
-    if(s['t_yuzu-will'] === undefined) s['t_yuzu-will'] = true;
+  if(s['_defaults_v4'] !== true){
     ['praiseche','bleood','joeyy','rr'].forEach(store => {
       if(s['eu_'+store] === undefined) s['eu_'+store] = true;
     });
-    s['_defaults_v3'] = true;
+    s['_defaults_v4'] = true;
     setS(s);
   }
 })();
